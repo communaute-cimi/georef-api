@@ -1,4 +1,6 @@
-# georef-api
+# georef-api une API pour les données géo de référence
+
+## Introduction
 
 ## Pré-requis
 
