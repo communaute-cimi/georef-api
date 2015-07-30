@@ -5,6 +5,7 @@
 PostgreSQL > 9.2
 Postgis
 Serveur web
+Composer
 
 ## Installation BDD
 
@@ -17,6 +18,7 @@ Reload de postgres
 Tester l'accès avec le login/mdp
 
 ## Installation Web
+Installation serveur web
 Récupération des sources git
 Installation de composer
 Composer update dans libs/
