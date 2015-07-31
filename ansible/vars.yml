@@ -1,0 +1,3 @@
+db_name: "db_dev"
+db_user: "login"
+db_password: "password"
