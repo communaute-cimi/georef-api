@@ -12,6 +12,7 @@ apt-get install ansible vagrant virtualbox
 
 ```
 vagrant up
+vagrant ssh
 ```
 
 Puis aller sur : *http://10.73.0.50/api.php/layers/commissariats?y=47.71969&x=-2.92285* pour tester. 
