@@ -2,6 +2,26 @@
 
 ## Introduction
 
+## Vagrant
+
+https://docs.vagrantup.com/v2/
+
+```
+apt-get install ansible vagrant virtualbox
+```
+
+```
+vagrant up
+```
+
+Puis aller sur : *http://10.73.0.50/api.php/layers/commissariats?y=47.71969&x=-2.92285* pour tester. 
+Vous pouvez aussi essayer avec 127.0.0.1:8080
+
+```
+curl "http://10.73.0.50/api.php/layers/commissariats?y=47.71969&x=-2.92285"
+{"distkm":"7","service":"Brigade de proximit\u00e9 de Grand-Champ","tel":"+33 2 97 66 77 03"}
+```
+
 ## Pré-requis
 
 *   PostgreSQL > 9.2
