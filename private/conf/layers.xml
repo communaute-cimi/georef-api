@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reqs>
+	<req name="pointInCommune" typeElement="poly">
+		<params>
+			<param name="x" />
+			<param name="y" />
+			<param name="geom" />
+		</params>
+		
+		<sql>
+			<![CDATA[
+				WITH point AS (
+				    SELECT ST_GeometryFromText('POINT(%lon% %lat%)', 4326) as geom
+				)
+				select 	com_osm.insee, com_osm.nom, com_osm.dpt, round(com_osm.surf_m2/1000000, 2) as surf_km2, 
+						com_osm.popul as pop, st_asGeoJson(com_osm.geom) as geom
+				FROM point
+				INNER JOIN communes_osm_sir_20150101_100m com_osm ON (ST_CONTAINS(com_osm.geom, point.geom)); 
+            ]]>		
+		</sql>
+	</req>	
+	<req name="pointInCompetenceTerr" typeElement="poly">
+		<sql>
+			<![CDATA[
+				WITH point AS (
+				    SELECT ST_GeometryFromText('POINT(%lon% %lat%)', 4326) as geom
+				)
+				select uel.competence as competence, uel.type_unite, uel.lib_unite, st_asGeoJson(uel.geom) as geom 
+				FROM point
+				INNER JOIN competences_osm_201507_100m uel ON (ST_CONTAINS(uel.geom, point.geom))
+            ]]>		
+		</sql>
+	</req>	
+	<req name="gendarmeries" typeElement="point">
+		<sql>
+			<![CDATA[
+				WITH point AS (
+			    	SELECT ST_GeometryFromText('POINT(%lon% %lat%)', 4326) as geom
+			    )
+			    
+				SELECT
+				    round(ST_Distance_Spheroid(brigade.geom, point.geom, 'SPHEROID["WGS 84",6378137,298.257223563]')/1000) AS distKM, 
+				    brigade.service, brigade.telephone as tel 
+				FROM points_acceuil_gn_etalab_201507 brigade, point
+				ORDER BY distKM ASC
+				LIMIT 1
+            ]]>		
+		</sql>
+	</req>	
+	<req name="commissariats" typeElement="point">
+		<sql>
+			<![CDATA[
+				WITH point AS (
+			    	SELECT ST_GeometryFromText('POINT(%lon% %lat%)', 4326) as geom
+			    )
+			    
+				SELECT 
+				    round(ST_Distance_Spheroid(brigade.geom, point.geom, 'SPHEROID["WGS 84",6378137,298.257223563]')/1000) AS distKM, 
+				    brigade.service, brigade.telephone as tel
+				FROM points_acceuil_gn_etalab_201507 brigade, point
+				ORDER BY distKM ASC
+				LIMIT 1
+            ]]>		
+		</sql>
+	</req>			
+</reqs>

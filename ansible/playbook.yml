@@ -1,0 +1,76 @@
+---
+- hosts: all
+  user: vagrant
+  sudo: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: install PostGis
+      apt: pkg={{ item }} update_cache=yes state=latest
+      with_items:
+        - postgresql-contrib-9.4
+        - postgresql-9.4-postgis-2.1
+        - postgresql-9.4-postgis-2.1-scripts
+        - python-psycopg2
+
+    - name: ensure postgis_template database exists
+      sudo_user: postgres
+      postgresql_db: db={{ db_name }} state=present
+
+    - name: add access
+      sudo_user: postgres
+      postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL
+
+    - name: ensure postgis_template database exists
+      sudo_user: postgres
+      postgresql_db: db={{ db_name }} state=present owner={{ db_user }}
+
+    - name: run the postgis SQL scripts
+      sudo_user: postgres
+      command: psql -d {{ db_name }} -f {{ item }}
+      with_items:
+        - /usr/share/postgresql/9.4/contrib/postgis-2.1/postgis.sql
+        - /usr/share/postgresql/9.4/contrib/postgis-2.1/spatial_ref_sys.sql
+        - /usr/share/postgresql/9.4/contrib/postgis-2.1/postgis_comments.sql
+
+    - name: import db
+      sudo_user: postgres
+      shell: cd /tmp; cp /vagrant/private/install/georef_sql.tar.zip .; tar -xvf georef_sql.tar.zip; PGPASSWORD={{ db_password }} psql -h 127.0.0.1 -U {{ db_user }} -w {{ db_name }} < export_georef.sql
+
+    - name: set public priv. for {{ db_user }}
+      sudo_user: postgres
+      postgresql_privs: db={{ db_name }} privs=ALL type=schema objs=public role={{ db_user }}
+
+    - name: install Apache/PHP
+      apt: pkg={{ item }} update_cache=yes state=latest
+      with_items:
+        - php5-common
+        - libapache2-mod-php5
+        - php5-cli
+        - php5-pgsql
+
+    - name: link /vagrant to /var/www/vagrant
+      file: src=/vagrant/ dest=/var/www/vagrant state=link
+
+    - name: push Apache config
+      copy: src=files/000-default.conf dest=/etc/apache2/sites-enabled/
+      notify:
+        - restart apache2
+
+    - name: push api conf
+      copy: src=files/conf.json dest=/var/www/vagrant/private/conf/conf.json
+
+    - name: install composer
+      shell: cd /usr/local/bin; curl -sS https://getcomposer.org/installer | php; mv composer.phar composer
+
+    - name : composer install
+      composer: working_dir=/var/www/vagrant/libs
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+
+    - name: restart postgresql
+      action: service name=postgresql state=restarted
