@@ -55,9 +55,9 @@
 			    )
 			    
 				SELECT 
-				    round(ST_Distance_Spheroid(brigade.geom, point.geom, 'SPHEROID["WGS 84",6378137,298.257223563]')/1000) AS distKM, 
-				    brigade.service, brigade.telephone as tel
-				FROM points_acceuil_gn_etalab_201507 brigade, point
+				    round(ST_Distance_Spheroid(commissariat.geom, point.geom, 'SPHEROID["WGS 84",6378137,298.257223563]')/1000) AS distKM, 
+				    commissariat.service, commissariat.tel as tel
+				FROM points_acceuil_pn_etalab_201507 commissariat, point
 				ORDER BY distKM ASC
 				LIMIT 1
             ]]>		
