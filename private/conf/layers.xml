@@ -62,5 +62,17 @@
 				LIMIT 1
             ]]>		
 		</sql>
+	</req>		
+	<req name="pointInEpci" typeElement="poly">
+		<sql>
+			<![CDATA[
+				WITH point AS (
+			    	SELECT ST_GeometryFromText('POINT(%lon% %lat%)', 4326) as geom
+			    )
+				SELECT type_epci, nom_epci, short_name, st_asGeoJson(cc_osm.geom) as geom
+				FROM point
+				INNER JOIN epci_osm_20150303_100m cc_osm ON (ST_CONTAINS(cc_osm.geom, point.geom)); 
+            ]]>		
+		</sql>
 	</req>			
 </reqs>

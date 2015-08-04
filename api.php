@@ -81,6 +81,8 @@ try {
             
             $oResult = $query->fetch(PDO::FETCH_OBJ);
             
+            if($oResult == FALSE) throw new Exception(sprintf("Aucun résultat pour le point [x=%s y=%s]",$lon,$lat), 1);
+            
             $app -> response() -> header('Content-Type', 'application/json');
             
             echo json_encode($oResult);
