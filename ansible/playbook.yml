@@ -15,7 +15,7 @@
         - postgresql-9.4-postgis-2.1-scripts
         - python-psycopg2
 
-    - name: ensure postgis_template database exists
+    - name: create {{ db_name }}
       sudo_user: postgres
       postgresql_db: db={{ db_name }} state=present
 
@@ -23,7 +23,7 @@
       sudo_user: postgres
       postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL
 
-    - name: ensure postgis_template database exists
+    - name: create {{ db_name }}
       sudo_user: postgres
       postgresql_db: db={{ db_name }} state=present owner={{ db_user }}
 
@@ -60,7 +60,7 @@
         - restart apache2
 
     - name: push api conf
-      copy: src=files/conf.json dest=/var/www/vagrant/private/conf/conf.json
+      template: src=files/conf.json.j2 dest=/var/www/vagrant/private/conf/conf.json
 
     - name: install composer
       shell: cd /usr/local/bin; curl -sS https://getcomposer.org/installer | php; mv composer.phar composer

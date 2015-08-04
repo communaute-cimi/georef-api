@@ -44,10 +44,14 @@ try {
     $app -> get('/test/accessBdd', function() use ($app) {
         $env = $app->environment();    
         $dbh = $env['db_conn'];
-        $query = $dbh->query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';", PDO::FETCH_OBJ);
-        $oResult = $query->fetch(PDO::FETCH_OBJ);
+        $query = $dbh->query(
+            "SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name NOT IN 
+                ('geography_columns', 'geometry_columns', 'spatial_ref_sys', 'raster_columns');", PDO::FETCH_OBJ);
+        $oResult = $query->fetchAll(PDO::FETCH_OBJ);
+        
         $app -> response() -> header('Content-Type', 'application/json');
-        echo json_encode(array('message' => 'Base de données ok'));
+        echo json_encode(array('message' => 'Base de données ok', 'tables' => $oResult));
     });
     
     // Couches dispos dans le fichier xml
@@ -80,6 +84,8 @@ try {
             $query = $dbh->query(bindParams((string) $req->sql, $lat, $lon), PDO::FETCH_OBJ);
             
             $oResult = $query->fetch(PDO::FETCH_OBJ);
+            
+            if($oResult == FALSE) throw new Exception(sprintf("Aucun résultat pour le point [x=%s y=%s]",$lon,$lat), 1);
             
             $app -> response() -> header('Content-Type', 'application/json');
             
