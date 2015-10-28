@@ -1,3 +1,4 @@
 .project
 .idea
+.vagrant
 private/conf/conf.json

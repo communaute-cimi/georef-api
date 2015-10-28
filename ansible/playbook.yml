@@ -37,7 +37,7 @@
 
     - name: import db
       sudo_user: postgres
-      shell: cd /tmp; cp /vagrant/private/install/georef_sql.tar.zip .; tar -xvf georef_sql.tar.zip; PGPASSWORD={{ db_password }} psql -h 127.0.0.1 -U {{ db_user }} -w {{ db_name }} < export_georef.sql
+      shell: cd /tmp; cp /vagrant/private/install/georef_sql.tar.gz .; tar -zxvf georef_sql.tar.gz; PGPASSWORD={{ db_password }} psql -h 127.0.0.1 -U {{ db_user }} -w {{ db_name }} < export_georef.sql
 
     - name: set public priv. for {{ db_user }}
       sudo_user: postgres
